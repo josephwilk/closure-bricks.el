@@ -8,4 +8,4 @@ Want would Scheme bricks look like if implemented in Emacs?
 
 #### Emacs experiments
 
-![]((http://s16.postimg.org/ra925pn6d/bricks.png)
+![](http://s16.postimg.org/ra925pn6d/bricks.png)
