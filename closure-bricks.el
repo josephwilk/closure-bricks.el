@@ -328,6 +328,7 @@ Used by jit-lock for dynamic highlighting."
   (save-excursion
     (goto-char start)
     ;; START can be anywhere in buffer; determine the nesting depth at START loc
+    (setq paren-start '())
     (let ((depth (closure-bricks-depth start)))
       (while (and (< (point) end)
                   (re-search-forward closure-bricks-delim-regex end t))
@@ -336,9 +337,10 @@ Used by jit-lock for dynamic highlighting."
           (let ((delim (char-after (point))))
             (cond ((eq ?\( delim)
                    (setq depth (1+ depth))
-                   (setq paren-start (point)))
+                   (setq paren-start (cons (point) paren-start)))
                   ((eq ?\) delim)
-                   (closure-bricks-apply-color-block "paren" depth paren-start (point))
+                   (closure-bricks-apply-color-block "paren" depth (car (last paren-start)) (point))
+                   (setq paren-start (butlast paren-start))
                    (setq depth (or (and (<= depth 0) 0) ; unmatched paren
                                    (1- depth)))))))
         ;; move past delimiter so re-search-forward doesn't pick it up again
