@@ -102,26 +102,26 @@ Nil disables brace highlighting."
   :group 'closure-bricks-faces)
 
 (defface closure-bricks-depth-6-face
-  '((((background light)) (:background "#b0b0b3"))
-    (((background dark)) (:background "#b0b0b3")))
+  '((((background light)) (:background "#841F51"))
+    (((background dark)) (:background "#841F51")))
   "Nested delimiters face, depth 6."
   :group 'closure-bricks-faces)
 
 (defface closure-bricks-depth-7-face
-  '((((background light)) (:background "#90a890"))
-    (((background dark)) (:background "#90a890")))
+  '((((background light)) (:background "#F30007"))
+    (((background dark)) (:background "#F30007")))
   "Nested delimiters face, depth 7."
   :group 'closure-bricks-faces)
 
 (defface closure-bricks-depth-8-face
-  '((((background light)) (:background "#a2b6da"))
-    (((background dark)) (:background "#a2b6da")))
+  '((((background light)) (:background "#503684"))
+    (((background dark)) (:background "#503684")))
   "Nested delimiters face, depth 8."
   :group 'closure-bricks-faces)
 
 (defface closure-bricks-depth-9-face
-  '((((background light)) (:background "#9cb6ad"))
-    (((background dark)) (:background "#9cb6ad")))
+  '((((background light)) (:background "#284EC0"))
+    (((background dark)) (:background "#284EC0")))
   "Nested delimiters face, depth 9."
   :group 'closure-bricks-faces)
 
@@ -334,10 +334,11 @@ Used by jit-lock for dynamic highlighting."
                    (setq depth (1+ depth))
                    (setq paren-start (cons (point) paren-start)))
                   ((eq ?\) delim)
-                   (closure-bricks-apply-color-block "paren" depth (car (last paren-start)) (point))
-                   (setq paren-start (butlast paren-start))
+                   (when (car (last paren-start))
+                     (closure-bricks-apply-color-block "paren" depth (point-at-bol) (point))
+                     (setq paren-start (butlast paren-start))
                    (setq depth (or (and (<= depth 0) 0) ; unmatched paren
-                                   (1- depth)))))))
+                                   (1- depth))))))))
         ;; move past delimiter so re-search-forward doesn't pick it up again
         (forward-char)))))
 
