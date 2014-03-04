@@ -65,39 +65,39 @@ Nil disables brace highlighting."
 ;; Unmatched delimiter face:
 (defface closure-bricks-unmatched-face
   '((((background light)) (:background "#88090B"))
-    (((background dark)) (:background "#88090B")))
+    (((background dark)) (:background  "#88090B")))
   "Face to highlight unmatched closing delimiters in."
   :group 'closure-bricks-faces)
 
 ;; Faces for highlighting delimiters by nested level:
 (defface closure-bricks-depth-1-face
-  '((((background light)) (:background "grey55"))
-    (((background dark)) (:background "grey55")))
+  '((((background light)) (:background "#FDDD0C"))
+    (((background dark)) (:background "#FDDD0C")))
   "Nested delimiters face, depth 1 - outermost set."
   :tag "Rainbow Delimiters Depth 1 Face -- OUTERMOST"
   :group 'closure-bricks-faces)
 
 (defface closure-bricks-depth-2-face
-  '((((background light)) (:background "#93a8c6"))
-    (((background dark)) (:background "#93a8c6")))
+  '((((background light)) (:background "#DC5609"))
+    (((background dark)) (:background "#DC5609")))
   "Nested delimiters face, depth 2."
   :group 'closure-bricks-faces)
 
 (defface closure-bricks-depth-3-face
-  '((((background light)) (:background "#b0b1a3"))
-    (((background dark)) (:background "#b0b1a3")))
+  '((((background light)) (:background "#C04005"))
+    (((background dark)) (:background "#C04005")))
   "Nested delimiters face, depth 3."
   :group 'closure-bricks-faces)
 
 (defface closure-bricks-depth-4-face
-  '((((background light)) (:background "#97b098"))
-    (((background dark)) (:background "#97b098")))
+  '((((background light)) (:background "#F9690A"))
+    (((background dark)) (:background "#F9690A")))
   "Nested delimiters face, depth 4."
   :group 'closure-bricks-faces)
 
 (defface closure-bricks-depth-5-face
-  '((((background light)) (:background "#aebed8"))
-    (((background dark)) (:background "#aebed8")))
+  '((((background light)) (:background "#BE0026"))
+    (((background dark)) (:background "#BE0026")))
   "Nested delimiters face, depth 5."
   :group 'closure-bricks-faces)
 
@@ -244,9 +244,7 @@ Sets text properties:
       ;; (when (eq depth -1) (message "Unmatched delimiter at char %s." loc))
       (add-text-properties loc (1+  loc)
                            `(font-lock-face ,delim-face
-                                            ;;rear-nonsticky t
                                             background "#a2b6da")))))
-
 
 (defsubst closure-bricks-propertize-block (start-loc end-loc depth)
   (with-silent-modifications
@@ -258,14 +256,11 @@ Sets text properties:
                            `(font-lock-face ,delim-face
                                             rear-nonsticky t)))))
 
-
-
 (defsubst closure-bricks-unpropertize-delimiter (loc)
   "Remove text properties set by closure-bricks mode from char at LOC."
   (with-silent-modifications
     (remove-text-properties loc (- 1 loc)
                             '(font-lock-face nil rear-nonsticky nil))))
-
 
 (defun closure-bricks-char-ineligible-p (loc)
   "Return t if char at LOC should be skipped, e.g. if inside a comment.
