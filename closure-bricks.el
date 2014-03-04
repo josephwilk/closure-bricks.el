@@ -336,6 +336,7 @@ Used by jit-lock for dynamic highlighting."
                   ((eq ?\) delim)
                    (when (car (last paren-start))
                      (closure-bricks-apply-color-block "paren" depth (point-at-bol) (point))
+                     (closure-bricks-propertize-block (point-at-bol) (1+ (point-at-bol)) 1)
                      (setq paren-start (butlast paren-start))
                    (setq depth (or (and (<= depth 0) 0) ; unmatched paren
                                    (1- depth))))))))
