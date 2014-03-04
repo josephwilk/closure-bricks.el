@@ -2,7 +2,9 @@
 
 Want would Scheme bricks look like if implemented in Emacs?
 
-#### Scheme Bricks (http://www.pawfal.org/dave/index.cgi?Projects/Scheme%20Bricks)
+#### Scheme Bricks 
+
+http://www.pawfal.org/dave/index.cgi?Projects/Scheme%20Bricks)
 
 ![](http://www.pawfal.org/dave/images/sbricks.jpg)
 
