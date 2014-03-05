@@ -9,8 +9,8 @@
 (defgroup closure-bricks nil
   "Highlight nested parentheses, brackets, and braces according to their depth."
   :prefix "closure-bricks-"
-  :link '(url-link :tag "Website for closure-bricks (EmacsWiki)"
-                   "http://www.emacswiki.org/emacs/RainbowDelimiters")
+  :link '(url-link :tag "Website for closure-bricks"
+                   "https://github.com/josephwilk/closure-bricks.el")
   :group 'applications)
 
 (defgroup closure-bricks-faces nil
@@ -22,8 +22,6 @@ When depth exceeds innermost defined face, colors cycle back through."
   :link '(custom-group-link "closure-bricks")
   :link '(custom-group-link :tag "Toggle Delimiters" "closure-bricks-toggle-delimiter-highlighting")
   :prefix 'closure-bricks-faces-)
-
-;; Choose which delimiters you want to highlight in your preferred language:
 
 (defgroup closure-bricks-toggle-delimiter-highlighting nil
   "Choose which delimiters to highlight."
@@ -59,7 +57,6 @@ Nil disables brace highlighting."
   :type 'boolean
   :group 'closure-bricks-toggle-delimiter-highlighting)
 
-
 ;;; Faces:
 
 ;; Unmatched delimiter face:
@@ -69,65 +66,61 @@ Nil disables brace highlighting."
   "Face to highlight unmatched closing delimiters in."
   :group 'closure-bricks-faces)
 
-;; Faces for highlighting delimiters by nested level:
+;; Faces for highlighting closures by nested level:
 (defface closure-bricks-depth-1-face
   '((((background light)) (:background "#FDDD0C"))
     (((background dark)) (:background "#FDDD0C")))
-  "Nested delimiters face, depth 1 - outermost set."
-  :tag "Rainbow Delimiters Depth 1 Face -- OUTERMOST"
+  "Nested closures face, depth 1 - outermost set."
+  :tag "Closure Bricks Depth 1 Face -- OUTERMOST"
   :group 'closure-bricks-faces)
 
 (defface closure-bricks-depth-2-face
   '((((background light)) (:background "#DC5609"))
     (((background dark)) (:background "#DC5609")))
-  "Nested delimiters face, depth 2."
+  "Nested closures face, depth 2."
   :group 'closure-bricks-faces)
 
 (defface closure-bricks-depth-3-face
   '((((background light)) (:background "#C04005"))
     (((background dark)) (:background "#C04005")))
-  "Nested delimiters face, depth 3."
+  "Nested closures face, depth 3."
   :group 'closure-bricks-faces)
 
 (defface closure-bricks-depth-4-face
   '((((background light)) (:background "#F9690A"))
     (((background dark)) (:background "#F9690A")))
-  "Nested delimiters face, depth 4."
+  "Nested closures face, depth 4."
   :group 'closure-bricks-faces)
 
 (defface closure-bricks-depth-5-face
   '((((background light)) (:background "#BE0026"))
     (((background dark)) (:background "#BE0026")))
-  "Nested delimiters face, depth 5."
+  "Nested closures face, depth 5."
   :group 'closure-bricks-faces)
 
 (defface closure-bricks-depth-6-face
   '((((background light)) (:background "#841F51"))
     (((background dark)) (:background "#841F51")))
-  "Nested delimiters face, depth 6."
+  "Nested closures face, depth 6."
   :group 'closure-bricks-faces)
 
 (defface closure-bricks-depth-7-face
   '((((background light)) (:background "#F30007"))
     (((background dark)) (:background "#F30007")))
-  "Nested delimiters face, depth 7."
+  "Nested closures face, depth 7."
   :group 'closure-bricks-faces)
 
 (defface closure-bricks-depth-8-face
   '((((background light)) (:background "#503684"))
     (((background dark)) (:background "#503684")))
-  "Nested delimiters face, depth 8."
+  "Nested closures face, depth 8."
   :group 'closure-bricks-faces)
 
 (defface closure-bricks-depth-9-face
   '((((background light)) (:background "#284EC0"))
     (((background dark)) (:background "#284EC0")))
-  "Nested delimiters face, depth 9."
+  "Nested closures face, depth 9."
   :group 'closure-bricks-faces)
-
-
-;;; Faces 10+:
-;; NOTE: Currently unused. Additional faces for depths 9+ can be added on request.
 
 (defconst closure-bricks-max-face-count 9
   "Number of faces defined for highlighting delimiter levels.
@@ -262,6 +255,11 @@ Sets text properties:
     (remove-text-properties loc (- 1 loc)
                             '(font-lock-face nil rear-nonsticky nil))))
 
+(defsubst closure-bricks-unpropertize-block (start-loc end-loc)
+  "Remove text properties set by closure-bricks mode from char at LOC."
+  (with-silent-modifications
+    (remove-text-properties start-loc (- 1 end-loc) '(font-lock-face nil rear-nonsticky nil))))
+
 (defun closure-bricks-char-ineligible-p (loc)
   "Return t if char at LOC should be skipped, e.g. if inside a comment.
 
@@ -317,7 +315,7 @@ LOC is location of character (delimiter) to be colorized."
 
 ;; main function called by jit-lock:
 (defun closure-bricks-propertize-region (start end)
-  "Highlight delimiters in region between START and END.
+  "Highlight closures in region between START and END.
 
 Used by jit-lock for dynamic highlighting."
   (save-excursion
@@ -347,19 +345,19 @@ Used by jit-lock for dynamic highlighting."
         (forward-char)))))
 
 (defun closure-bricks-unpropertize-region (start end)
-  "Remove highlighting from delimiters between START and END."
+  "Remove highlighting from closure between START and END."
   (save-excursion
     (goto-char start)
     (while (and (< (point) end)
                 (re-search-forward closure-bricks-delim-regex end t))
       ;; re-search-forward places point 1 further than the delim matched:
-      (closure-bricks-unpropertize-delimiter (1- (point))))))
+      (closure-bricks-unpropertize-block (point-at-bol) (point-at-eol)))))
 
 ;;; Minor mode:
 
 ;;;###autoload
 (define-minor-mode closure-bricks-mode
-  "Highlight nested parentheses, brackets, and braces according to their depth."
+  "Highlight closures based on depth."
   nil "" nil ; No modeline lighter - it's already obvious when the mode is on.
   (if (not closure-bricks-mode)
       (progn
