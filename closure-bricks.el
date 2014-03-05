@@ -312,7 +312,7 @@ LOC is location of character (delimiter) to be colorized."
 ;;; JIT-Lock functionality
 
 ;; Used to skip delimiter-by-delimiter `closure-bricks-propertize-region'.
-(defvar closure-bricks-delim-regex "\\(\(\\|\)\\|\\[\\|\\]\\|\{\\|\}\\)"
+(defvar closure-bricks-delim-regex "\\(\(\\|\)\\)"
   "Regex matching all opening and closing delimiters the mode highlights.")
 
 ;; main function called by jit-lock:
