@@ -310,7 +310,7 @@ LOC is location of character (delimiter) to be colorized."
 ;;; JIT-Lock functionality
 
 ;; Used to skip delimiter-by-delimiter `closure-bricks-propertize-region'.
-(defvar closure-bricks-delim-regex "\\(\(\\|\)\\)"
+(defvar closure-bricks-delim-regex "\\(\(\\|\)\\|\\[\\|\\]\\|\{\\|\}\\)"
   "Regex matching all opening and closing delimiters the mode highlights.")
 
 ;; main function called by jit-lock:
@@ -328,18 +328,23 @@ Used by jit-lock for dynamic highlighting."
         (backward-char) ; re-search-forward places point after delim; go back.
         (unless (closure-bricks-char-ineligible-p (point))
           (let ((delim (char-after (point))))
-            (cond ((eq ?\( delim)
-                   (setq depth (1+ depth))
-                   (setq paren-start (cons (point) paren-start)))
-                  ((eq ?\) delim)
-                   (when (car (last paren-start))
-                     (closure-bricks-apply-color-block "paren" depth (point-at-bol) (point))
+            (cond
+             ((eq ?\] delim)
+              (closure-bricks-apply-color-block "paren" depth (point-at-bol) (point))
+              (dotimes (number depth)
+                (closure-bricks-propertize-block (+ (* number 2) (point-at-bol)) (+ 1 (* number 2) (point-at-bol)) (+ 1 number))))
+             ((eq ?\( delim)
+              (setq depth (1+ depth))
+              (setq paren-start (cons (point) paren-start)))
+             ((eq ?\) delim)
+              (when (car (last paren-start))
+                (closure-bricks-apply-color-block "paren" depth (point-at-bol) (point))
 
-                     (dotimes (number depth)
-                       (closure-bricks-propertize-block (+ (* number 2) (point-at-bol)) (+ 1 (* number 2) (point-at-bol)) (+ 1 number)))
+                (dotimes (number depth)
+                  (closure-bricks-propertize-block (+ (* number 2) (point-at-bol)) (+ 1 (* number 2) (point-at-bol)) (+ 1 number)))
 
-                     (setq paren-start (butlast paren-start))
-                   (setq depth (or (and (<= depth 0) 0) ; unmatched paren
+                (setq paren-start (butlast paren-start))
+                (setq depth (or (and (<= depth 0) 0) ; unmatched paren
                                    (1- depth))))))))
         ;; move past delimiter so re-search-forward doesn't pick it up again
         (forward-char)))))
