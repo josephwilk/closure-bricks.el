@@ -311,8 +311,8 @@ LOC is location of character (delimiter) to be colorized."
 ;;; JIT-Lock functionality
 
 ;; Used to skip delimiter-by-delimiter `closure-bricks-propertize-region'.
-(defvar closure-bricks-delim-regex "\\(\(\\|\)\\|\\[\\|\\]\\|\{\\|\}\\)"
-  "Regex matching all opening and closing delimiters the mode highlights.")
+(defvar closure-bricks-brick-edges-regex "\\(\(\\|\)\\|
+\\)")
 
 ;; main function called by jit-lock:
 (defun closure-bricks-propertize-region (start end)
@@ -325,28 +325,27 @@ Used by jit-lock for dynamic highlighting."
     (let ((depth (closure-bricks-depth start))
           (paren-start '()))
       (while (and (< (point) end)
-                  (re-search-forward closure-bricks-delim-regex end t))
+                  (re-search-forward closure-bricks-brick-edges-regex end t))
         (backward-char) ; re-search-forward places point after delim; go back.
         (unless (closure-bricks-char-ineligible-p (point))
           (let ((delim (char-after (point))))
             (cond
-             ((eq ?\] delim)
-              (closure-bricks-apply-color-block "paren" depth (point-at-bol) (point))
+             ((and (or (eq ?\n delim) (eq ?\r delim))
+                   (> depth 0))
+              (closure-bricks-apply-color-block "paren" depth (point-at-bol) (- (point) 1))
+
               (dotimes (number depth)
-                (closure-bricks-propertize-block (+ (* number 2) (point-at-bol)) (+ 1 (* number 2) (point-at-bol)) (+ 1 number))))
+                (closure-bricks-propertize-block (+ (* number 2) (line-beginning-position)) (+ 1 (* number 2) (line-beginning-position)) (+ 1 number)))
+              )
              ((eq ?\( delim)
               (setq depth (1+ depth))
               (setq paren-start (cons (point) paren-start)))
              ((eq ?\) delim)
               (when (car (last paren-start))
-                (closure-bricks-apply-color-block "paren" depth (point-at-bol) (point))
-
-                (dotimes (number depth)
-                  (closure-bricks-propertize-block (+ (* number 2) (point-at-bol)) (+ 1 (* number 2) (point-at-bol)) (+ 1 number)))
-
-                (setq paren-start (butlast paren-start))
-                (setq depth (or (and (<= depth 0) 0) ; unmatched paren
-                                   (1- depth))))))))
+                ;; (closure-bricks-apply-color-block "paren" depth (point-at-bol) (point))
+                (setq paren-start (butlast paren-start)))
+              (setq depth (or (and (<= depth 0) 0) ; unmatched paren
+                              (1- depth)))))))
         ;; move past delimiter so re-search-forward doesn't pick it up again
         (forward-char)))))
 
@@ -355,9 +354,9 @@ Used by jit-lock for dynamic highlighting."
   (save-excursion
     (goto-char start)
     (while (and (< (point) end)
-                (re-search-forward closure-bricks-delim-regex end t))
+                (re-search-forward closure-bricks-brick-edges-regex end t))
       ;; re-search-forward places point 1 further than the delim matched:
-      (closure-bricks-unpropertize-block (line-beginning-position) (line-end-position)))))
+      (closure-bricks-unpropertize-block (point-min) (point-max)))))
 
 ;;; Minor mode:
 
