@@ -258,7 +258,8 @@ Sets text properties:
 (defsubst closure-bricks-unpropertize-block (start-loc end-loc)
   "Remove text properties set by closure-bricks mode from char at LOC."
   (with-silent-modifications
-    (remove-text-properties start-loc (- 1 end-loc) '(font-lock-face nil rear-nonsticky nil))))
+    (remove-text-properties start-loc end-loc '(font-lock-face nil rear-nonsticky nil
+                                                                     foreground "#FFFFFF"))))
 
 (defun closure-bricks-char-ineligible-p (loc)
   "Return t if char at LOC should be skipped, e.g. if inside a comment.
@@ -356,7 +357,7 @@ Used by jit-lock for dynamic highlighting."
     (while (and (< (point) end)
                 (re-search-forward closure-bricks-delim-regex end t))
       ;; re-search-forward places point 1 further than the delim matched:
-      (closure-bricks-unpropertize-block (point-at-bol) (point-at-eol)))))
+      (closure-bricks-unpropertize-block (line-beginning-position) (line-end-position)))))
 
 ;;; Minor mode:
 
