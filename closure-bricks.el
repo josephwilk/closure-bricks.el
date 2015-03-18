@@ -1,5 +1,4 @@
 ;;Using rainbow delimiters as a basis for plugin
-;;https://github.com/jlr/closure-bricks
 ;;Inspired by Scheme Bricks http://www.pawfal.org/dave/blog/tag/scheme-bricks/
 
 (eval-when-compile (require 'cl))
